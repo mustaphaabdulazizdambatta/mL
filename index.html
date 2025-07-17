@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Email Sender</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .card {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+            border-radius: 12px;
+            border: 1px solid rgba(209, 213, 219, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        .input-field {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+        
+        .html-editor {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+        
+        .html-preview-container {
+            margin-top: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .html-preview-tabs {
+            display: flex;
+            background-color: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .html-preview-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-right: 1px solid #e2e8f0;
+        }
+        
+        .html-preview-tab.active {
+            background-color: #ffffff;
+            font-weight: 500;
+            color: #4f46e5;
+        }
+        
+        .html-preview-content {
+            display: none;
+            padding: 16px;
+            background-color: white;
+        }
+        
+        .html-preview-content.active {
+            display: block;
+        }
+        
+        .html-preview-frame {
+            width: 100%;
+            height: 400px;
+            border: none;
+            background-color: white;
+        }
+        
+        .html-code-preview {
+            width: 100%;
+            height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            padding: 10px;
+            border: none;
+            background-color: #f8fafc;
+            white-space: pre;
+            overflow: auto;
+        }
+        
+        .success-message {
+            animation: fadeIn 0.3s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4 md:p-8">
+    <div class="card w-full max-w-4xl p-6 md:p-8">
+        <div class="flex items-center mb-6">
+            <div class="bg-indigo-100 p-3 rounded-full mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">HI5 Email Sender</h1>
+                <p class="text-sm text-gray-600">Full HTML support with proper sender name</p>
+            </div>
+        </div>
+        
+        <form id="emailForm" class="space-y-5" onsubmit="return false;">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                    <input type="text" id="name" name="fromname" placeholder="John Doe" 
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                
+                <div>
+                    <label for="fromEmail" class="block text-sm font-medium text-gray-700 mb-1">From Email</label>
+                    <input type="email" id="fromEmail" name="fromEmail" placeholder="your@email.com" 
+                        class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <div>
+                <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                <input type="text" id="subject" name="subject" placeholder="Your Subject Here" 
+                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <div>
+               <label for="message" class="block text-sm font-medium text-gray-700 mb-1">HTML Message Body</label>
+              <textarea id="message" name="body" rows="12" 
+              class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 html-editor"
+              placeholder="Paste your HTML email template here"><p></p>
+<div>
+<table width="100%" cellspacing="0" align="center" bgcolor="#ffbf00">
+<tbody>
+<tr>
+<td><br /><br />
+<table align="center">
+<tbody>
+<tr>
+<td style="height: 70px; width: 650px; background-color: #fff; -moz-border-radius: 3px; -webkit-border-radius: 3px; -khtml-border-radius: 3px; border-radius: 3px;"><br />
+<table style="width: 600px;" cellspacing="0" align="center">
+<tbody>
+<tr>
+<td>
+<table cellspacing="0">
+<tbody>
+<tr>
+<td><span style="font-size: medium; font-family: impact; color: #df0101;"><strong>DHL Express </strong></span></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td style="height: 7px;">&nbsp;</td>
+</tr>
+<tr>
+<td style="height: 280px; width: 650px; background-color: #fff; -moz-border-radius: 3px; -webkit-border-radius: 3px; -khtml-border-radius: 3px; border-radius: 3px;">
+<table style="width: 570px;" cellspacing="0" align="center">
+<tbody>
+<tr>
+<td>
+<table cellspacing="0">
+<tbody>
+<tr>
+<td><span style="font-size: small; font-family: Arial, Helvetica, sans-serif; color: #000000;">Hallo&nbsp; email,<br /></span><br /><br /></td>
+</tr>
+<tr>
+<td style="height: 10px;">&nbsp;</td>
+</tr>
+<tr>
+<td>
+<table style="height: 30px; width: 230px; background-color: #df0101; -moz-border-radius: 2px; -webkit-border-radius: 2px; -khtml-border-radius: 2px; border-radius: 2px;">
+<tbody>
+<tr>
+<td>
+<div align="center"><a style="text-decoration: none;" href="https://test.com?t=#e-mail#"><span style="font-size: small; font-family: Arial, Helvetica, sans-serif; color: #ffffff;"><strong>CLIIICK HERE</strong> </span></a></div>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td style="height: 5px;">&nbsp;</td>
+</tr>
+<tr>
+<td><hr style="width: 460px;" align="left" /></td>
+</tr>
+<tr>
+<td style="height: 5px;">&nbsp;</td>
+</tr>
+<tr>
+<td><span style="font-size: small; font-family: Arial, Helvetica, sans-serif; color: #000000;"><strong><span style="color: #df0101;">DHL Shipment Paket </span></strong></span></td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<td style="height: 10px;">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+<p style="margin: 0px;">&nbsp;</p>
+<p style="margin: 0px;">&nbsp;</p>
+<p style="margin: 0px;">&nbsp;</p>
+<p style="margin: 0px;">&nbsp;</p>
+<p style="margin: 0px;">&nbsp;</p>
+</div>
+<div class="notranslate" style="all: initial;">&nbsp;</div></textarea>
+              
+              <!-- Message HTML Preview Section -->
+              <div class="html-preview-container mt-4">
+                  <div class="html-preview-tabs">
+                      <div class="html-preview-tab active" data-tab="message-preview">Preview</div>
+                      <div class="html-preview-tab" data-tab="message-code">HTML Code</div>
+                  </div>
+                  <div class="html-preview-content active" data-content="message-preview">
+                      <iframe id="messagePreviewFrame" class="html-preview-frame"></iframe>
+                  </div>
+                  <div class="html-preview-content" data-content="message-code">
+                      <pre id="messageCodePreview" class="html-code-preview"></pre>
+                  </div>
+              </div>
+            </div>
+            
+            <div>
+                <label for="toEmails" class="block text-sm font-medium text-gray-700 mb-1">Email lists (one per line)</label>
+                <textarea id="toEmails" name="toEmails" rows="6" placeholder="recipient1@example.com\nrecipient2@example.com" 
+                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 font-mono text-sm"></textarea>
+            </div>
+            
+            <div>
+                <label for="attachment" class="block text-sm font-medium text-gray-700 mb-1">HTML Attachment (Optional)</label>
+                <textarea id="attachment" name="attachment" rows="10"
+                    class="input-field w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 html-editor"
+                    placeholder="<h1>Optional HTML attachment</h1>"></textarea>
+                
+                <!-- HTML Content Preview Section -->
+                <div class="html-preview-container mt-4">
+                    <div class="html-preview-tabs">
+                        <div class="html-preview-tab active" data-tab="html-preview">Preview</div>
+                        <div class="html-preview-tab" data-tab="html-code">HTML Code</div>
+                    </div>
+                    <div class="html-preview-content active" data-content="html-preview">
+                        <iframe id="htmlPreviewFrame" class="html-preview-frame"></iframe>
+                    </div>
+                    <div class="html-preview-content" data-content="html-code">
+                        <pre id="htmlCodePreview" class="html-code-preview"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch sending controls -->
+            <div class="batch-controls">
+                <h3 class="font-medium text-gray-800 mb-3">Batch Sending Settings</h3>
+                
+                <div class="inline-fields">
+                    <div>
+                        <label for="batchSize">Emails per batch</label>
+                        <input type="number" id="batchSize" min="1" value="10" class="input-field">
+                    </div>
+                    <div>
+                        <label for="batchDelay">Delay between batches (minutes)</label>
+                        <input type="number" id="batchDelay" min="1" value="5" class="input-field">
+                    </div>
+                </div>
+                
+                <div class="batch-progress hidden">
+                    <div class="batch-progress-bar"></div>
+                </div>
+                
+                <div id="batchStatus" class="text-sm text-gray-600 hidden"></div>
+            </div>
+
+            <!-- Send Status Section -->
+            <div id="sendStatusSection">
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-medium text-gray-700">Send Status</label>
+                    <div class="flex items-center space-x-4">
+                        <label class="text-xs text-gray-600">Design:</label>
+                        <div class="flex items-center space-x-3">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="statusDesign" value="modern" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500" checked>
+                                <span class="ml-2 text-sm text-gray-700">Modern</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" name="statusDesign" value="terminal" class="w-4 h-4 text-indigo-600 border-gray-300 focus:ring-indigo-500">
+                                <span class="ml-2 text-sm text-gray-700">Terminal</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="statusContainer" class="bg-gray-50 border border-gray-200 rounded-lg p-4 max-h-64 overflow-y-auto">
+                    <div id="statusList" class="space-y-2">
+                        <div class="text-sm text-gray-500 italic">Click "Send Email" to start sending and see status updates here...</div>
+                    </div>
+                    <div id="statusSummary" class="mt-4 pt-3 border-t border-gray-200 text-sm text-gray-600 hidden">
+                        <!-- Summary will be shown here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between pt-2">
+                <button type="button" id="resetForm" class="text-gray-600 hover:text-gray-800 text-sm font-medium">Clear Form</button>
+                <button type="button" id="sendBtn" class="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors">
+                    Send Email
+                </button>
+                <button type="button" id="pauseBtn" class="px-6 py-3 bg-yellow-500 text-white font-medium rounded-lg hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors hidden">
+                    Pause
+                </button>
+            </div>
+        </form>
+        
+        <div id="successMessage" class="success-message hidden mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <h3 class="text-sm font-medium text-green-800">Email sent successfully!</h3>
+                    <div class="mt-1 text-sm text-green-700">Your message has been delivered to the recipients.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('emailForm');
+            const resetBtn = document.getElementById('resetForm');
+            const sendBtn = document.getElementById('sendBtn');
+            const pauseBtn = document.getElementById('pauseBtn');
+            const successMessage = document.getElementById('successMessage');
+            const batchProgress = document.querySelector('.batch-progress');
+            const batchProgressBar = document.querySelector('.batch-progress-bar');
+            const batchStatus = document.getElementById('batchStatus');
+            
+            // HTML elements
+            const messageContent = document.getElementById('message');
+            const htmlContent = document.getElementById('attachment');
+            
+            // Preview elements for message
+            const messagePreviewFrame = document.getElementById('messagePreviewFrame');
+            const messageCodePreview = document.getElementById('messageCodePreview');
+            const messagePreviewTabs = document.querySelectorAll('[data-tab^="message-"]');
+            
+            // Preview elements for HTML content
+            const htmlPreviewFrame = document.getElementById('htmlPreviewFrame');
+            const htmlCodePreview = document.getElementById('htmlCodePreview');
+            const htmlPreviewTabs = document.querySelectorAll('[data-tab^="html-"]');
+            
+            let isSending = false;
+            let isPaused = false;
+            let currentBatch = 0;
+            let totalBatches = 0;
+            let totalEmails = 0;
+            let sentCount = 0;
+            let failedCount = 0;
+            let emailQueue = [];
+            
+            // Validate email format
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+            
+            // Send button click handler
+            sendBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (isSending) {
+                    alert('Emails are already being sent.');
+                    return;
+                }
+                
+                try {
+                    // Basic validation
+                    const name = document.getElementById('name').value.trim();
+                    const fromEmail = document.getElementById('fromEmail').value.trim();
+                    const subject = document.getElementById('subject').value.trim();
+                    const message = messageContent.value.trim();
+                    const toEmails = document.getElementById('toEmails').value.trim();
+                    const htmlContentValue = htmlContent.value.trim();
+                    const batchSize = parseInt(document.getElementById('batchSize').value) || 10;
+                    const batchDelay = parseInt(document.getElementById('batchDelay').value) || 5;
+                    
+                    if (!name) {
+                        alert('Please enter your name.');
+                        return;
+                    }
+                    
+                    if (!fromEmail || !validateEmail(fromEmail)) {
+                        alert('Please enter a valid from email.');
+                        return;
+                    }
+                    
+                    if (!toEmails) {
+                        alert('Please add at least one recipient.');
+                        return;
+                    }
+                    
+                    if (!subject) {
+                        alert('Please enter a subject.');
+                        return;
+                    }
+                    
+                    if (!message && !htmlContentValue) {
+                        alert('Please enter either a message or HTML content.');
+                        return;
+                    }
+                    
+                    // Extract emails from textarea
+                    const emails = toEmails.split(/\r\n|\r|\n/)
+                        .map(email => email.trim())
+                        .filter(email => email && validateEmail(email));
+                    
+                    if (emails.length === 0) {
+                        alert('Please enter valid email addresses.');
+                        return;
+                    }
+                    
+                    // Initialize batch sending
+                    emailQueue = emails;
+                    totalEmails = emails.length;
+                    totalBatches = Math.ceil(totalEmails / batchSize);
+                    currentBatch = 0;
+                    sentCount = 0;
+                    failedCount = 0;
+                    
+                    // Show batch progress
+                    batchProgress.classList.remove('hidden');
+                    batchStatus.classList.remove('hidden');
+                    updateBatchStatus(0, totalBatches);
+                    
+                    // Show status section and start sending
+                    initializeStatusList(emails);
+                    
+                    // Disable send button, enable pause button
+                    sendBtn.disabled = true;
+                    pauseBtn.classList.remove('hidden');
+                    
+                    // Start sending batches
+                    isSending = true;
+                    sendNextBatch(batchSize, batchDelay * 60000, name, fromEmail, subject, message, htmlContentValue);
+                    
+                } catch (error) {
+                    console.error('Error in send button click:', error);
+                    alert('An error occurred: ' + error.message);
+                }
+            });
+            
+            // Pause button click handler
+            pauseBtn.addEventListener('click', function() {
+                if (isPaused) {
+                    // Resume sending
+                    isPaused = false;
+                    pauseBtn.textContent = 'Pause';
+                    batchStatus.textContent = `Resumed sending batch ${currentBatch + 1} of ${totalBatches}`;
+                    
+                    // Continue with the next batch
+                    const batchSize = parseInt(document.getElementById('batchSize').value) || 10;
+                    const batchDelay = parseInt(document.getElementById('batchDelay').value) || 5;
+                    const name = document.getElementById('name').value.trim();
+                    const fromEmail = document.getElementById('fromEmail').value.trim();
+                    const subject = document.getElementById('subject').value.trim();
+                    const message = messageContent.value.trim();
+                    const htmlContentValue = htmlContent.value.trim();
+                    
+                    sendNextBatch(batchSize, batchDelay * 60000, name, fromEmail, subject, message, htmlContentValue);
+                } else {
+                    // Pause sending
+                    isPaused = true;
+                    pauseBtn.textContent = 'Resume';
+                    batchStatus.textContent = `Paused after batch ${currentBatch} of ${totalBatches}`;
+                }
+            });
+            
+            // Initialize status list with all emails
+            function initializeStatusList(emails) {
+                const statusList = document.getElementById('statusList');
+                const statusSummary = document.getElementById('statusSummary');
+                
+                // Reset status list
+                statusList.innerHTML = '';
+                statusSummary.classList.add('hidden');
+                
+                // Create status items for each email
+                emails.forEach(email => {
+                    const statusItem = createStatusItem(email, 'pending');
+                    statusList.appendChild(statusItem);
+                });
+                
+                // Scroll to bottom after creating all items
+                scrollToBottom();
+            }
+            
+            // Send emails in batches
+            async function sendNextBatch(batchSize, delayMs, fromName, fromEmail, subject, message, htmlContentValue) {
+                if (isPaused) return;
+                
+                currentBatch++;
+                if (currentBatch > totalBatches) {
+                    completeSending();
+                    return;
+                }
+                
+                // Update batch status
+                updateBatchStatus(currentBatch, totalBatches);
+                
+                // Get the next batch of emails
+                const batchStart = (currentBatch - 1) * batchSize;
+                const batchEnd = Math.min(batchStart + batchSize, totalEmails);
+                const batchEmails = emailQueue.slice(batchStart, batchEnd);
+                
+                // Send current batch
+                const batchResults = await sendBatch(batchEmails, fromName, fromEmail, subject, message, htmlContentValue);
+                
+                // Update counts
+                sentCount += batchResults.sent;
+                failedCount += batchResults.failed;
+                
+                // Schedule next batch if not paused
+                if (!isPaused) {
+                    if (currentBatch < totalBatches) {
+                        batchStatus.textContent = `Waiting ${delayMs/60000} minutes before next batch...`;
+                        
+                        setTimeout(() => {
+                            sendNextBatch(batchSize, delayMs, fromName, fromEmail, subject, message, htmlContentValue);
+                        }, delayMs);
+                    } else {
+                        completeSending();
+                    }
+                }
+            }
+            
+            // Send a single batch of emails
+            async function sendBatch(emails, fromName, fromEmail, subject, message, htmlContentValue) {
+                let sent = 0;
+                let failed = 0;
+                const statusList = document.getElementById('statusList');
+                
+                // Find the starting index of this batch in the status list
+                const startIndex = emailQueue.indexOf(emails[0]);
+                
+                for (let i = 0; i < emails.length; i++) {
+                    if (isPaused) break;
+                    
+                    const email = emails[i];
+                    const statusIndex = startIndex + i;
+                    const statusItem = statusList.children[statusIndex];
+                    
+                    updateStatusItem(statusItem, 'sending');
+                    scrollToBottom();
+                    
+                    try {
+                        // Prepare the content with email replacement
+                        const personalizedMessage = message.replace(/email/g, email);
+                        const personalizedHtml = htmlContentValue.replace(/email/g, email);
+                        
+                        const formData = new FormData();
+                        formData.append('fromEmail', fromEmail);
+                        formData.append('fromName', fromName);
+                        formData.append('subject', subject);
+                        formData.append('body', personalizedMessage);
+                        formData.append('attachment', personalizedHtml);
+                        formData.append('singleEmail', email);
+                        
+                        const response = await fetch('ls.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        const result = await response.json();
+                        
+                        if (result.status === 'sent') {
+                            updateStatusItem(statusItem, 'sent', result.message);
+                            scrollToBottom();
+                            sent++;
+                        } else {
+                            updateStatusItem(statusItem, 'failed', result.message);
+                            scrollToBottom();
+                            failed++;
+                        }
+                    } catch (error) {
+                        updateStatusItem(statusItem, 'failed', error.message);
+                        scrollToBottom();
+                        failed++;
+                    }
+                    
+                    if (i < emails.length - 1 && !isPaused) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+                }
+                
+                return { sent, failed };
+            }
+            
+            // Update batch progress and status
+            function updateBatchStatus(currentBatch, totalBatches) {
+                const progressPercent = (currentBatch / totalBatches) * 100;
+                batchProgressBar.style.width = `${progressPercent}%`;
+                
+                if (currentBatch <= totalBatches) {
+                    batchStatus.textContent = `Sending batch ${currentBatch} of ${totalBatches}`;
+                }
+            }
+            
+            // Complete the sending process
+            function completeSending() {
+                isSending = false;
+                
+                // Show summary
+                showSummary(sentCount, failedCount);
+                
+                // Update UI
+                sendBtn.disabled = false;
+                pauseBtn.classList.add('hidden');
+                batchStatus.textContent = `Completed ${sentCount} sent, ${failedCount} failed`;
+                
+                // Show success message if all sent
+                if (failedCount === 0 && sentCount > 0) {
+                    showSuccessMessage();
+                }
+            }
+            
+            // Reset form
+            resetBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to clear the form?')) {
+                    form.reset();
+                    // Reset status list to initial state
+                    const statusList = document.getElementById('statusList');
+                    const statusSummary = document.getElementById('statusSummary');
+                    statusList.innerHTML = '<div class="text-sm text-gray-500 italic">Click "Send Email" to start sending and see status updates here...</div>';
+                    statusSummary.classList.add('hidden');
+                    
+                    // Reset batch progress
+                    batchProgress.classList.add('hidden');
+                    batchStatus.classList.add('hidden');
+                    batchProgressBar.style.width = '0%';
+                    
+                    // Reset sending state
+                    isSending = false;
+                    isPaused = false;
+                    sendBtn.disabled = false;
+                    pauseBtn.classList.add('hidden');
+                    pauseBtn.textContent = 'Pause';
+                }
+            });
+            
+            // Show success message
+            function showSuccessMessage() {
+                const successMessage = document.getElementById('successMessage');
+                successMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    successMessage.classList.add('hidden');
+                }, 5000);
+            }
+            
+            // Create status item element
+            function createStatusItem(email, status) {
+                const item = document.createElement('div');
+                const isTerminal = document.body.classList.contains('terminal-theme');
+                
+                if (isTerminal) {
+                    item.className = `status-item status-${status} terminal-prompt`;
+                    item.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="status-email mr-2">${email}</span>
+                                <span class="status-message">${getTerminalStatusMessage(status)}</span>
+                            </div>
+                            <span class="status-time">[${new Date().toLocaleTimeString()}]</span>
+                        </div>
+                    `;
+                } else {
+                    item.className = 'status-item flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200';
+                    item.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="status-icon mr-3">
+                                ${getStatusIcon(status)}
+                            </div>
+                            <div>
+                                <div class="status-email font-medium text-gray-900">${email}</div>
+                                <div class="status-message text-sm text-gray-500">${getStatusMessage(status)}</div>
+                            </div>
+                        </div>
+                        <div class="status-time text-xs text-gray-400">${new Date().toLocaleTimeString()}</div>
+                    `;
+                }
+                return item;
+            }
+            
+            // Update status item
+            function updateStatusItem(item, status, message = '') {
+                const isTerminal = document.body.classList.contains('terminal-theme');
+                const messageEl = item.querySelector('.status-message');
+                const timeEl = item.querySelector('.status-time');
+                
+                if (isTerminal) {
+                    // Update terminal style
+                    item.className = `status-item status-${status} terminal-prompt`;
+                    messageEl.textContent = message || getTerminalStatusMessage(status);
+                    timeEl.textContent = `[${new Date().toLocaleTimeString()}]`;
+                } else {
+                    // Update modern style
+                    const icon = item.querySelector('.status-icon');
+                    icon.innerHTML = getStatusIcon(status);
+                    messageEl.textContent = message || getStatusMessage(status);
+                    timeEl.textContent = new Date().toLocaleTimeString();
+                    
+                    // Update colors based on status
+                    if (status === 'sent') {
+                        item.classList.add('bg-green-50', 'border-green-200');
+                        item.classList.remove('bg-white', 'border-gray-200');
+                    } else if (status === 'failed') {
+                        item.classList.add('bg-red-50', 'border-red-200');
+                        item.classList.remove('bg-white', 'border-gray-200');
+                    }
+                }
+            }
+            
+            // Get status icon
+            function getStatusIcon(status) {
+                switch (status) {
+                    case 'pending':
+                        return '<div class="w-5 h-5 bg-gray-300 rounded-full"></div>';
+                    case 'sending':
+                        return '<div class="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>';
+                    case 'sent':
+                        return '<svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    case 'failed':
+                        return '<svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                    default:
+                        return '<div class="w-5 h-5 bg-gray-300 rounded-full"></div>';
+                }
+            }
+            
+            // Get status message
+            function getStatusMessage(status) {
+                switch (status) {
+                    case 'pending':
+                        return 'Waiting to send...';
+                    case 'sending':
+                        return 'Sending...';
+                    case 'sent':
+                        return 'Email sent successfully';
+                    case 'failed':
+                        return 'Failed to send email';
+                    default:
+                        return 'Unknown status';
+                }
+            }
+            
+            // Get terminal status message
+            function getTerminalStatusMessage(status) {
+                switch (status) {
+                    case 'pending':
+                        return '-> QUEUED';
+                    case 'sending':
+                        return '-> SENDING...';
+                    case 'sent':
+                        return '-> SUCCESS';
+                    case 'failed':
+                        return '-> ERROR';
+                    default:
+                        return '-> UNKNOWN';
+                }
+            }
+            
+            // Auto-scroll to bottom of status container
+            function scrollToBottom() {
+                const statusContainer = document.querySelector('#sendStatusSection .overflow-y-auto');
+                if (statusContainer) {
+                    statusContainer.scrollTo({
+                        top: statusContainer.scrollHeight,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+            
+            // Show summary
+            function showSummary(sent, failed) {
+                const statusSummary = document.getElementById('statusSummary');
+                const total = sent + failed;
+                const isTerminal = document.body.classList.contains('terminal-theme');
+                
+                if (isTerminal) {
+                    statusSummary.innerHTML = `
+                        <div class="terminal-prompt">
+                            <strong>BATCH_COMPLETE:</strong> ${sent} SUCCESS, ${failed} ERROR, ${total} TOTAL | ${new Date().toLocaleTimeString()}
+                        </div>
+                    `;
+                } else {
+                    statusSummary.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <strong>Summary:</strong> ${sent} sent, ${failed} failed out of ${total} total
+                            </div>
+                            <div class="text-xs text-gray-400">
+                                Completed at ${new Date().toLocaleTimeString()}
+                            </div>
+                        </div>
+                    `;
+                }
+                statusSummary.classList.remove('hidden');
+                scrollToBottom();
+            }
+            
+            // Initialize HTML preview functionality
+            function initHtmlPreview(textarea, previewFrame, codePreview) {
+                textarea.addEventListener('input', function() {
+                    updateHtmlPreview(textarea, previewFrame, codePreview);
+                });
+                updateHtmlPreview(textarea, previewFrame, codePreview);
+            }
+            
+            // Update HTML preview
+            function updateHtmlPreview(textarea, previewFrame, codePreview) {
+                const html = textarea.value;
+                codePreview.textContent = html;
+                const previewDoc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+                previewDoc.open();
+                previewDoc.write(html);
+                previewDoc.close();
+            }
+            
+            // Handle tab switching
+            function handleTabSwitching(tabs, prefix) {
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', function() {
+                        document.querySelectorAll(`[data-tab^="${prefix}"], [data-content^="${prefix}"]`).forEach(el => {
+                            el.classList.remove('active');
+                        });
+                        const tabName = this.getAttribute('data-tab');
+                        this.classList.add('active');
+                        document.querySelector(`.html-preview-content[data-content="${tabName}"]`).classList.add('active');
+                    });
+                });
+            }
+            
+            // Initialize previews
+            initHtmlPreview(messageContent, messagePreviewFrame, messageCodePreview);
+            handleTabSwitching(messagePreviewTabs, 'message-');
+            initHtmlPreview(htmlContent, htmlPreviewFrame, htmlCodePreview);
+            handleTabSwitching(htmlPreviewTabs, 'html-');
+        });
+    </script>
+</body>
+</html>
